@@ -31,7 +31,10 @@ Public Enum errorType
 End Enum
 
 
-Function Convolve(ByRef srcArray&(), ByRef convArray!(), Optional ByVal srcPadding As Boolean = True, Optional ByVal convLoop% = 1) As Long()
+Function Convolve(ByRef srcArray&(), _
+                  ByRef convArray!(), _
+         Optional ByVal srcPadding As Boolean = True, _
+         Optional ByVal convLoop% = 1) As Long()
 
 Rem Purpose: This was created to easily convolve general 2D arrays with a 2D square kernel. This function will be used in pixel routines _
              which is why all arrays are dimensioned for long integers. The optional boolean argument for padding is defaulted to be true. _
@@ -319,7 +322,7 @@ Rem Purpose: The color value composed from all three color channels, red, green 
 
     Dim arrRGB&(), _
         lngBase&, _
-        R&, G&, B&
+        r&, G&, B&
     
         ReDim arrRGB(1 To 3)
         lngBase = 256
@@ -328,9 +331,9 @@ Rem Purpose: The color value composed from all three color channels, red, green 
     
             B = lngCV Mod lngBase
             G = (lngCV \ lngBase) Mod lngBase
-            R = (lngCV \ lngBase ^ (2)) Mod lngBase
+            r = (lngCV \ lngBase ^ (2)) Mod lngBase
         
-            arrRGB(1) = R
+            arrRGB(1) = r
             arrRGB(2) = G
             arrRGB(3) = B
         
@@ -348,7 +351,8 @@ Rem Purpose: The color value composed from all three color channels, red, green 
     
 End Function
 
-Function RawDataToGrey(ByRef rawData() As Byte, Optional ByVal GreyscaleCalculation As greyType = greyType_AVERAGE) As Long()
+Function RawDataToGrey(ByRef rawData() As Byte, _
+              Optional ByVal GreyscaleCalculation As greyType = greyType_AVERAGE) As Long()
 
 Rem Purpose: Our data from GetBitmapBits comes to us in the byte array form: rawData(color,y,x). Since it comes in ByRef, we transfer it into a copy _
              array and convert it from byte to long. Again, this helps with calculation speeds. From there, we convert the RGB values to greyscale _
@@ -360,7 +364,7 @@ Rem Purpose: Our data from GetBitmapBits comes to us in the byte array form: raw
         rawMaxCol&, _
         rawMaxColor&, _
         Grey&(), _
-        R&, G&, B&, _
+        r&, G&, B&, _
         i&, j&, k&
         
         rawMaxRow = UBound(rawData, 3)
@@ -387,12 +391,12 @@ Rem Purpose: Our data from GetBitmapBits comes to us in the byte array form: raw
         For j = 1 To rawMaxCol
             For i = 1 To rawMaxRow
             
-                R = rawCopy(1, j, i)
+                r = rawCopy(1, j, i)
                 G = rawCopy(2, j, i)
                 B = rawCopy(3, j, i)
                 'Alpha = rawCopy(4, j, i)
                 
-                Grey(j, i) = Greyscale(R, G, B, GreyscaleCalculation)
+                Grey(j, i) = Greyscale(r, G, B, GreyscaleCalculation)
                 
             Next i
         Next j
@@ -401,7 +405,10 @@ Rem Purpose: Our data from GetBitmapBits comes to us in the byte array form: raw
 
 End Function
 
-Function Greyscale&(ByVal R&, ByVal G&, ByVal B&, Optional ByVal GreyscaleCalculation As greyType = greyType_AVERAGE)
+Function Greyscale&(ByVal r&, _
+                    ByVal G&, _
+                    ByVal B&, _
+           Optional ByVal GreyscaleCalculation As greyType = greyType_AVERAGE)
 
 Rem Purpose: Greyscale comes in many forms, and I thought it would be interesting to display the different ways it can be _
              calculated. Usually, the easiest and most intuitive way would be to average the RGB values, which is why I set _
@@ -418,16 +425,16 @@ Rem Purpose: Greyscale comes in many forms, and I thought it would be interestin
         
         If GreyscaleCalculation = greyType_AVERAGE Then
         
-            Greyscale = (R + G + B) / 3
+            Greyscale = (r + G + B) / 3
              
         ElseIf GreyscaleCalculation = greyType_LUMINANCE Then
         
-            Greyscale = R * 0.3 + G * 0.59 + B * 0.11
+            Greyscale = r * 0.3 + G * 0.59 + B * 0.11
             
         ElseIf GreyscaleCalculation = greyType_DESATURATION Then
         
             ReDim k(1 To 3)
-            k(1) = R: k(2) = G: k(3) = B
+            k(1) = r: k(2) = G: k(3) = B
            
            ' Sorts array from largest to smallest. Quick & dirty bubblesort.
             For i = LBound(k) To UBound(k)
@@ -448,7 +455,7 @@ Rem Purpose: Greyscale comes in many forms, and I thought it would be interestin
             
         ElseIf GreyscaleCalculation = greyType_RED Then
         
-            Greyscale = R
+            Greyscale = r
             
         ElseIf GreyscaleCalculation = greyType_GREEN Then
         
@@ -531,7 +538,8 @@ Rem Purpose: By the time we reach this function, we have taken a 3D byte array o
 
 End Function
 
-Function Gradient(ByRef arr1&(), ByRef arr2&()) As Long()
+Function Gradient(ByRef arr1&(), _
+                  ByRef arr2&()) As Long()
 
 Rem Purpose: For some kernel filters, we pass unique symmetrical operators to get the response in the X or Y direction. These directional derivatives can _
              show results by themselves but when the magnitude of both are taken, we see the full effect. This function will take two 2D long arrays and _
@@ -574,7 +582,9 @@ Rem Purpose: For some kernel filters, we pass unique symmetrical operators to ge
 
 End Function
 
-Function LinearInterpolation(ByRef rawData&(), ByVal srcWidth, ByVal srcHeight) As Long()
+Function LinearInterpolation(ByRef rawData&(), _
+                             ByVal srcWidth, _
+                             ByVal srcHeight) As Long()
 
     Dim arrCopy&(), _
         arrRescaled&(), _
@@ -672,7 +682,9 @@ Function ExportAsASCII(ByRef rawData&()) As String()
 
 End Function
 
-Function ExportASCIIPicture(ByRef rawASCII$(), Optional TextFile As Boolean = True, Optional HTMLFile As Boolean = False) As Boolean
+Function ExportASCIIPicture(ByRef rawASCII$(), _
+                   Optional ByVal TextFile As Boolean = True, _
+                   Optional ByVal HTMLFile As Boolean = False) As Boolean
     
     Dim wkbkASCII As Workbook, _
         wkshtASCII As Worksheet, _
@@ -745,7 +757,8 @@ Function ExportASCIIPicture(ByRef rawASCII$(), Optional TextFile As Boolean = Tr
 
 End Function
 
-Function WriteToTextFile(ByRef arrASCII$(), ByVal strFilePath$) As Boolean
+Function WriteToTextFile(ByRef arrASCII$(), _
+                         ByVal strFilePath$) As Boolean
 
     Dim FSO As Object, _
         txtFile As Object, _
@@ -882,7 +895,11 @@ Function ChooseImageFileExtension$(ByVal SelectedItem$)
 
 End Function
 
-Function DisplayImage(ByRef Picture As typePic, ByRef RefIID As GUID, ByRef objPic As IPicture, Optional ByVal strOutputImage$ = "", Optional ByVal strExtension$ = "")
+Function DisplayImage(ByRef Picture As typePic, _
+                      ByRef RefIID As Guid, _
+                      ByRef objPic As IPicture, _
+             Optional ByVal strOutputImage$ = "", _
+             Optional ByVal strExtension$ = "")
 
     Dim Check&, _
         CompletionStatus&
@@ -921,7 +938,8 @@ Function SourceImageDimensions(ByVal strInputImage$) As Long()
 
 End Function
 
-Function GenerateDeviceDependentBitmap(ByVal srcWidth&, ByVal srcHeight&) As LongPtr
+Function GenerateDeviceDependentBitmap(ByVal srcWidth&, _
+                                       ByVal srcHeight&) As LongPtr
 
     Const srcCopy = &HCC0020
     Const TwipToPixel! = 1.333333
@@ -967,3 +985,222 @@ Function GenerateDeviceDependentBitmap(ByVal srcWidth&, ByVal srcHeight&) As Lon
 
 End Function
 
+Function DiscreteIntensityDerivative(ByRef rawData&()) As Long()
+
+    Dim rawCopy&(), _
+        arrSum&(), _
+        arrD&(), _
+        arrDCopy&(), _
+        arrSort1D&(), _
+        arrSort2D&(), _
+        arrResults&(), _
+        rawMaxRow&, _
+        rawMaxCol&, _
+        transitionZones&, _
+        sum&, _
+        i&, j&
+
+        rawMaxRow = UBound(rawData, 2)
+        rawMaxCol = UBound(rawData, 1)
+        ReDim rawCopy(1 To rawMaxCol, 1 To rawMaxRow)
+        ReDim arrSum(1 To rawMaxCol)
+        ReDim arrD(1 To rawMaxCol)
+        ReDim arrDCopy(1 To rawMaxCol)
+        ReDim arrSort1D(1 To rawMaxCol)
+        ReDim arrSort2D(1 To 2, 1 To rawMaxCol)
+        
+        transitionZones = 4
+        ReDim arrResults(1 To transitionZones)
+        
+        rawCopy = rawData
+        
+        'Summing all of the picture's columns, and placing them into arrSum.
+        For j = 1 To rawMaxCol
+            sum = 0
+            For i = 1 To rawMaxRow
+            
+                sum = sum + rawCopy(j, i)
+            
+            Next i
+            arrSum(j) = sum
+        Next j
+        
+        'Calculating di/dx, and placing them into arrD(erivative).
+        For j = 1 To rawMaxCol
+            If j = rawMaxCol Then
+                arrD(j) = 0
+            Else
+                arrD(j) = Abs(arrSum(j + 1) - arrSum(j))
+            End If
+        Next j
+        
+        arrDCopy = arrD
+        
+        arrSort2D = QuicksortWithIndexMatching(arrDCopy, 1, rawMaxCol, arrSort1D, 1)
+
+End Function
+
+Function Quicksort(ByRef rawData&(), _
+                   ByVal lowerBound&, _
+                   ByVal upperBound&) As Long()
+
+    Dim pivot&, _
+        low&, _
+        high&, _
+        swap&
+        
+        low = lowerBound
+        high = upperBound - 1
+        pivot = rawData(upperBound)
+
+        Do While low <= high
+        
+            Do While (rawData(low) < pivot) And (low < upperBound)
+                low = low + 1
+            Loop
+            
+            Do While (rawData(high) > pivot) And (high > lowerBound)
+                high = high - 1
+            Loop
+            
+            If low <= high Then
+                swap = rawData(high)
+                rawData(high) = rawData(low)
+                rawData(low) = swap
+                low = low + 1
+                high = high - 1
+            End If
+            
+        Loop
+        
+        swap = rawData(upperBound)
+        rawData(upperBound) = rawData(low)
+        rawData(low) = swap
+        
+        If lowerBound < high Then
+            rawData = Quicksort(rawData, lowerBound, high)
+        End If
+        
+        If upperBound > low Then
+            rawData = Quicksort(rawData, low + 1, upperBound)
+        End If
+        
+        Quicksort = rawData
+
+End Function
+
+Function QuicksortWithIndexMatching(ByRef rawData&(), _
+                                    ByVal lowerBound&, _
+                                    ByVal upperBound&, _
+                                    ByRef sortIndex&(), _
+                           Optional ByVal sortFirstIteration = 1) As Long()
+
+    Dim arrResults&(), _
+        pivot&, _
+        low&, _
+        high&, _
+        swap&, _
+        rawMaxVal&, _
+        i&
+        
+        'Issues where returning from multiple recursion depth, the function's returned array would make the 1D rawData array, 2D.
+        'The rawData array would essentially become a copy of the the output array from QuicksortWithIndexMatching, very strange.
+        rawData = ArrayCheck(rawData)
+        
+        rawMaxVal = UBound(rawData)
+        low = lowerBound
+        high = upperBound - 1
+        pivot = rawData(upperBound)
+        
+        If sortFirstIteration = 1 Then
+            For i = 1 To rawMaxVal
+                sortIndex(i) = i
+            Next i
+        End If
+
+        Do While low <= high
+        
+            Do While (rawData(low) < pivot) And (low < upperBound)
+                low = low + 1
+            Loop
+            
+            Do While (rawData(high) > pivot) And (high > lowerBound)
+                high = high - 1
+            Loop
+            
+            If low <= high Then
+                'Quicksorting swap
+                swap = rawData(high)
+                rawData(high) = rawData(low)
+                rawData(low) = swap
+                
+                'Index swap
+                swap = sortIndex(high)
+                sortIndex(high) = sortIndex(low)
+                sortIndex(low) = swap
+                
+                'Iterate Quicksort
+                low = low + 1
+                high = high - 1
+            End If
+            
+        Loop
+        
+        'Final pivot swap
+        swap = rawData(upperBound)
+        rawData(upperBound) = rawData(low)
+        rawData(low) = swap
+        
+        'Final index swap
+        swap = sortIndex(upperBound)
+        sortIndex(upperBound) = sortIndex(low)
+        sortIndex(low) = swap
+                
+        If lowerBound < high Then
+            rawData = QuicksortWithIndexMatching(rawData, lowerBound, high, sortIndex, 0)
+        End If
+        
+        If upperBound > low Then
+            rawData = QuicksortWithIndexMatching(rawData, low + 1, upperBound, sortIndex, 0)
+        End If
+        
+        ReDim arrResults(1 To 2, 1 To rawMaxVal)
+        rawData = ArrayCheck(rawData)
+        
+        For i = 1 To rawMaxVal
+            arrResults(1, i) = rawData(i)
+            arrResults(2, i) = sortIndex(i)
+        Next i
+        
+        QuicksortWithIndexMatching = arrResults
+
+End Function
+
+Function ArrayCheck(ByRef rawData&()) As Long()
+
+    Dim rawMaxVal&, _
+        i&
+    
+        If UBound(rawData, 1) = 2 Then
+    
+            rawMaxVal = UBound(rawData, 2)
+            Dim arrTemp&()
+            ReDim arrTemp(1 To rawMaxVal)
+            
+            For i = 1 To rawMaxVal
+                arrTemp(i) = rawData(1, i)
+            Next i
+            
+            Erase rawData
+            ReDim rawData(1 To rawMaxVal)
+            
+            rawData = arrTemp
+            ArrayCheck = rawData
+            
+        Else
+        
+            ArrayCheck = rawData
+        
+        End If
+
+End Function
